@@ -36,22 +36,26 @@ const app = express();
 
 connectDB();
 
-// Build CORS origin - handle both full URLs and hostnames
-const getCorsOrigin = () => {
+// Build CORS origin - handle both full URLs and hostnames from Render
+const getAllowedOrigins = () => {
   const frontendUrl = process.env.FRONTEND_URL;
-  if (!frontendUrl) return 'http://localhost:5173';
+  const origins = ['http://localhost:5173'];
 
-  // If it's already a full URL, use it directly
-  if (frontendUrl.startsWith('http://') || frontendUrl.startsWith('https://')) {
-    return frontendUrl;
+  if (frontendUrl) {
+    // Add both with and without protocol in case Render sends just hostname
+    if (frontendUrl.startsWith('http')) {
+      origins.push(frontendUrl);
+    } else {
+      origins.push(`https://${frontendUrl}`);
+    }
   }
 
-  // Otherwise, it's just a hostname - add https://
-  return `https://${frontendUrl}`;
+  console.log('Allowed CORS origins:', origins);
+  return origins;
 };
 
 app.use(cors({
-  origin: getCorsOrigin(),
+  origin: getAllowedOrigins(),
   credentials: true
 }));
 app.use(express.json());
