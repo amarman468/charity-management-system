@@ -53,66 +53,68 @@ const ManageUsers = () => {
         <h1 className="text-2xl font-bold">Manage Users</h1>
 
         <div className="bg-white shadow rounded-md overflow-hidden">
-          <table className="w-full table-auto">
-            <thead className="bg-gray-100 text-left">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Joined</th>
-                <th className="px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u._id} className="border-t">
-                  <td className="px-4 py-3">{u.name}</td>
-                  <td className="px-4 py-3">{u.email}</td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={u.role}
-                      onChange={async (e) => {
-                        const newRole = e.target.value;
-                        try {
-                          await adminService.updateUser(u._id, { role: newRole });
-                          toast.success('Role updated');
-                          // update local state
-                          const ev = new CustomEvent('usersUpdated', { detail: users.map(x => x._id === u._id ? { ...x, role: newRole } : x) });
-                          window.dispatchEvent(ev);
-                        } catch (err) {
-                          toast.error('Failed to update role');
-                          console.error(err);
-                        }
-                      }}
-                      className="px-2 py-1 border rounded"
-                    >
-                      <option value="admin">admin</option>
-                      <option value="staff">staff</option>
-                      <option value="volunteer">volunteer</option>
-                      <option value="donor">donor</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">{new Date(u.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewActivity(u._id)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
-                      >
-                        Activity
-                      </button>
-                      <button
-                        onClick={() => handleRemove(u._id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded text-sm"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead className="bg-gray-100 text-left">
+                <tr>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Role</th>
+                  <th className="px-4 py-3">Joined</th>
+                  <th className="px-4 py-3">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u._id} className="border-t">
+                    <td className="px-4 py-3">{u.name}</td>
+                    <td className="px-4 py-3">{u.email}</td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={u.role}
+                        onChange={async (e) => {
+                          const newRole = e.target.value;
+                          try {
+                            await adminService.updateUser(u._id, { role: newRole });
+                            toast.success('Role updated');
+                            // update local state
+                            const ev = new CustomEvent('usersUpdated', { detail: users.map(x => x._id === u._id ? { ...x, role: newRole } : x) });
+                            window.dispatchEvent(ev);
+                          } catch (err) {
+                            toast.error('Failed to update role');
+                            console.error(err);
+                          }
+                        }}
+                        className="px-2 py-1 border rounded"
+                      >
+                        <option value="admin">admin</option>
+                        <option value="staff">staff</option>
+                        <option value="volunteer">volunteer</option>
+                        <option value="donor">donor</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-3">{new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleViewActivity(u._id)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+                        >
+                          Activity
+                        </button>
+                        <button
+                          onClick={() => handleRemove(u._id)}
+                          className="px-3 py-1 bg-red-500 text-white rounded text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       {showActivity && selectedUser && (
