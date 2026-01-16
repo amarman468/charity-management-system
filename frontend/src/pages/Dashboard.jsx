@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { Navigate } from 'react-router-dom';
 import DonorDashboard from './donor/DonorDashboard.jsx';
 import VolunteerDashboard from './volunteer/VolunteerDashboard.jsx';
 
@@ -25,8 +26,9 @@ const Dashboard = () => {
     return <VolunteerDashboard />;
   }
 
+  // Staff users are redirected to Reports page
   if (user.role === 'staff') {
-    return <div className="p-8 text-center text-xl">Staff Dashboard unavailable. Please use the navigation menu.</div>;
+    return <Navigate to="/reports" replace />;
   }
 
   return (
