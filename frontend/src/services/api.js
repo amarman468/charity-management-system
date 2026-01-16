@@ -1,7 +1,21 @@
 import axios from 'axios';
 
+// Build the API base URL - handle both full URLs and hostnames
+const getBaseUrl = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  if (!apiUrl) return '/api';
+
+  // If it's already a full URL, use it directly
+  if (apiUrl.startsWith('http://') || apiUrl.startsWith('https://')) {
+    return `${apiUrl}/api`;
+  }
+
+  // Otherwise, it's just a hostname - add https://
+  return `https://${apiUrl}/api`;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api',
+  baseURL: getBaseUrl(),
   headers: {
     'Content-Type': 'application/json'
   }
