@@ -36,26 +36,35 @@ const app = express();
 
 connectDB();
 
-// Build CORS origin - handle both full URLs and hostnames from Render
-const getAllowedOrigins = () => {
-  const frontendUrl = process.env.FRONTEND_URL;
-  const origins = ['http://localhost:5173'];
-
-  if (frontendUrl) {
-    // Add both with and without protocol in case Render sends just hostname
-    if (frontendUrl.startsWith('http')) {
-      origins.push(frontendUrl);
-    } else {
-      origins.push(`https://${frontendUrl}`);
-    }
+// Dynamic CORS origin function - handles Render deployments
+const corsOriginHandler = (origin, callback) => {
+  // Allow requests with no origin (mobile apps, Postman, etc.)
+  if (!origin) {
+    return callback(null, true);
   }
 
-  console.log('Allowed CORS origins:', origins);
-  return origins;
+  // Allow localhost for development
+  if (origin.includes('localhost')) {
+    return callback(null, true);
+  }
+
+  // Allow any onrender.com subdomain
+  if (origin.includes('.onrender.com')) {
+    return callback(null, true);
+  }
+
+  // Allow the specific FRONTEND_URL if set
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (frontendUrl && (origin === frontendUrl || origin === `https://${frontendUrl}`)) {
+    return callback(null, true);
+  }
+
+  console.log('CORS blocked origin:', origin);
+  callback(new Error('Not allowed by CORS'));
 };
 
 app.use(cors({
-  origin: getAllowedOrigins(),
+  origin: corsOriginHandler,
   credentials: true
 }));
 app.use(express.json());
