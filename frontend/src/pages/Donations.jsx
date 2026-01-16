@@ -116,65 +116,67 @@ const Donations = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Campaign</th>
-                {user?.role === 'admin' && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Donor</th>
-                )}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Method</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {donations.map((donation) => (
-                <tr key={donation._id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{donation.campaign?.title || 'N/A'}</td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Campaign</th>
                   {user?.role === 'admin' && (
-                    <td className="px-6 py-4 whitespace-nowrap">{donation.donor?.name || 'N/A'}</td>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Donor</th>
                   )}
-                  <td className="px-6 py-4 whitespace-nowrap">{donation.amount} BDT</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{donation.paymentMethod}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {new Date(donation.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 rounded text-sm ${donation.status === 'completed' ? 'bg-green-100 text-green-800' :
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Method</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {donations.map((donation) => (
+                  <tr key={donation._id}>
+                    <td className="px-6 py-4 whitespace-nowrap">{donation.campaign?.title || 'N/A'}</td>
+                    {user?.role === 'admin' && (
+                      <td className="px-6 py-4 whitespace-nowrap">{donation.donor?.name || 'N/A'}</td>
+                    )}
+                    <td className="px-6 py-4 whitespace-nowrap">{donation.amount} BDT</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{donation.paymentMethod}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {new Date(donation.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded text-sm ${donation.status === 'completed' ? 'bg-green-100 text-green-800' :
                         donation.status === 'failed' ? 'bg-red-100 text-red-800' :
                           'bg-yellow-100 text-yellow-800'
-                      }`}>
-                      {donation.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {donation.status === 'completed' && (
-                      <button
-                        onClick={() => handleDownloadReceipt(donation._id)}
-                        className="text-blue-600 hover:underline mr-4"
-                      >
-                        {t('downloadReceipt')}
-                      </button>
-                    )}
-                    {donation.campaign?.type === 'orphan_sponsorship' && (
-                      <button
-                        onClick={() => {
-                          setDonateForm({ ...donateForm, campaignId: donation.campaign._id });
-                          setShowDonateModal(true);
-                        }}
-                        className="text-purple-600 hover:underline font-semibold"
-                      >
-                        Renew
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        }`}>
+                        {donation.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {donation.status === 'completed' && (
+                        <button
+                          onClick={() => handleDownloadReceipt(donation._id)}
+                          className="text-blue-600 hover:underline mr-4"
+                        >
+                          {t('downloadReceipt')}
+                        </button>
+                      )}
+                      {donation.campaign?.type === 'orphan_sponsorship' && (
+                        <button
+                          onClick={() => {
+                            setDonateForm({ ...donateForm, campaignId: donation.campaign._id });
+                            setShowDonateModal(true);
+                          }}
+                          className="text-purple-600 hover:underline font-semibold"
+                        >
+                          Renew
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {donations.length === 0 && (
