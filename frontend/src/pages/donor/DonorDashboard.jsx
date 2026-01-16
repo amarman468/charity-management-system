@@ -58,27 +58,27 @@ const DonorDashboard = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow">
-                    <h3 className="text-xl font-bold mb-4">Recent Donations</h3>
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <h3 className="text-xl font-bold p-6 border-b">Recent Donations</h3>
                     {donations.length > 0 ? (
                         <div className="overflow-x-auto">
                             <table className="min-w-full">
-                                <thead>
-                                    <tr className="border-b">
-                                        <th className="text-left p-2">Campaign</th>
-                                        <th className="text-left p-2">Amount</th>
-                                        <th className="text-left p-2">Date</th>
-                                        <th className="text-left p-2">Status</th>
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="text-left p-4 font-medium text-gray-500 uppercase text-xs">Campaign</th>
+                                        <th className="text-left p-4 font-medium text-gray-500 uppercase text-xs">Amount</th>
+                                        <th className="text-left p-4 font-medium text-gray-500 uppercase text-xs">Date</th>
+                                        <th className="text-left p-4 font-medium text-gray-500 uppercase text-xs">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-gray-200">
                                     {donations.slice(0, 5).map((donation) => (
-                                        <tr key={donation._id} className="border-b">
-                                            <td className="p-2">{donation.campaign?.title || 'N/A'}</td>
-                                            <td className="p-2">{donation.amount} BDT</td>
-                                            <td className="p-2">{new Date(donation.createdAt).toLocaleDateString()}</td>
-                                            <td className="p-2">
-                                                <span className={`px-2 py-1 rounded ${donation.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                        <tr key={donation._id}>
+                                            <td className="p-4 whitespace-nowrap">{donation.campaign?.title || 'N/A'}</td>
+                                            <td className="p-4 whitespace-nowrap">{donation.amount} BDT</td>
+                                            <td className="p-4 whitespace-nowrap">{new Date(donation.createdAt).toLocaleDateString()}</td>
+                                            <td className="p-4 whitespace-nowrap">
+                                                <span className={`px-2 py-1 rounded text-sm ${donation.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                                     {donation.status}
                                                 </span>
                                             </td>
@@ -88,7 +88,7 @@ const DonorDashboard = () => {
                             </table>
                         </div>
                     ) : (
-                        <p className="text-gray-500">No donations yet</p>
+                        <p className="text-gray-500 p-6">No donations yet</p>
                     )}
                 </div>
             </div>
