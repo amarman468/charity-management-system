@@ -3,6 +3,14 @@ import axios from 'axios';
 // Build the API base URL - handle both full URLs and hostnames
 const getBaseUrl = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  // For production deployment on Render, use the backend URL
+  // Check if we're on an onrender.com domain
+  if (typeof window !== 'undefined' && window.location.hostname.includes('.onrender.com')) {
+    // Use the backend service URL (same pattern: charity-backend-xxx.onrender.com)
+    return 'https://charity-backend-src8.onrender.com/api';
+  }
+
   if (!apiUrl) return '/api';
 
   // If it's already a full URL, use it directly
