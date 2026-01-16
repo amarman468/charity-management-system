@@ -39,6 +39,9 @@ const volunteerTaskSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
+  fieldPhotos: [{
+    type: String // URL to photo
+  }],
   certificateGenerated: {
     type: Boolean,
     default: false

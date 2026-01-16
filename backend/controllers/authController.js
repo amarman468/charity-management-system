@@ -1,4 +1,6 @@
+import { sendWelcomeEmail } from '../services/emailService.js';
 import User from '../models/User.js';
+
 import jwt from 'jsonwebtoken';
 
 const generateToken = (userId, role) => {
@@ -16,14 +18,28 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
+    // If someone registers as an admin, mark their account as not active and not approved.
+    // An existing admin must approve them via the admin panel before they can log in.
+    const isAdminRequest = role === 'admin';
+
     const user = await User.create({
       name,
       email,
       password,
       role: role || 'donor',
       phone,
-      address
+      address,
+      isActive: isAdminRequest ? false : true,
+      isApproved: isAdminRequest ? false : true
     });
+
+    // For admin registration requests we do NOT auto-login or issue a token.
+    if (isAdminRequest) {
+      return res.status(201).json({ success: true, message: 'Admin registration submitted and awaiting approval by an existing admin.' });
+    }
+
+    // Send Welcome Email
+    sendWelcomeEmail(user).catch(console.error);
 
     const token = generateToken(user._id, user.role);
 
@@ -52,6 +68,11 @@ export const login = async (req, res) => {
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // If this is an admin account and it's not yet approved, block login with a clear message
+    if (user.role === 'admin' && user.isApproved === false) {
+      return res.status(403).json({ message: 'Admin account is awaiting approval' });
     }
 
     if (!user.isActive) {
@@ -85,7 +106,7 @@ export const login = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

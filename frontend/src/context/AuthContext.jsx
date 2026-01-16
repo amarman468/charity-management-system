@@ -44,10 +44,18 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authService.register(userData);
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      setUser(response.user);
-      toast.success('Registration successful!');
+
+      // If server returned a token, proceed to log the user in locally.
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        setUser(response.user);
+        toast.success('Registration successful!');
+      } else {
+        // Admin registration requests will not return a token: inform the user
+        toast.success(response.message || 'Registration submitted and awaiting approval.');
+      }
+
       return response;
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed');

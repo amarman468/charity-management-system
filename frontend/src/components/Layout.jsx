@@ -24,15 +24,18 @@ const Layout = ({ children }) => {
               <Link to="/dashboard" className="text-xl font-bold">
                 As-Shawkani Foundation
               </Link>
-              
+
               {user && (
                 <div className="flex space-x-4">
-                  <Link to="/dashboard" className="hover:text-blue-200">
-                    {t('dashboard')}
-                  </Link>
+                  {user.role !== 'staff' && (
+                    <Link to="/dashboard" className="hover:text-blue-200">
+                      {t('dashboard')}
+                    </Link>
+                  )}
                   <Link to="/campaigns" className="hover:text-blue-200">
                     {t('campaigns')}
                   </Link>
+
                   {user.role === 'donor' && (
                     <Link to="/donations" className="hover:text-blue-200">
                       {t('donations')}
@@ -54,9 +57,17 @@ const Layout = ({ children }) => {
                     </>
                   )}
                   {user.role === 'admin' && (
-                    <Link to="/users" className="hover:text-blue-200">
-                      {t('users')}
-                    </Link>
+                    <>
+                      <Link to="/admin/users" className="hover:text-blue-200">
+                        {t('users')}
+                      </Link>
+                      <Link to="/admin/tasks" className="hover:text-blue-200">
+                        Manage Tasks
+                      </Link>
+                      <Link to="/admin/requests" className="hover:text-blue-200">
+                        Admin Requests
+                      </Link>
+                    </>
                   )}
                 </div>
               )}
@@ -69,7 +80,7 @@ const Layout = ({ children }) => {
               >
                 {language === 'en' ? 'বাংলা' : 'English'}
               </button>
-              
+
               {user && (
                 <>
                   <span className="text-sm">

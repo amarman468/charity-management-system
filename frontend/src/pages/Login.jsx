@@ -20,8 +20,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const res = await login(email, password);
+      // Redirect based on role
+      if (res.user.role === 'staff') {
+        navigate('/reports');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
     } finally {
       setLoading(false);
@@ -33,7 +38,7 @@ const Login = () => {
       <div className="max-w-md mx-auto mt-20">
         <div className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-center mb-6">{t('loginTitle')}</h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

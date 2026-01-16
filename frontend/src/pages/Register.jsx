@@ -33,8 +33,14 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(formData);
-      navigate('/dashboard');
+      const response = await register(formData);
+      // If registration returned a token (normal user), go to dashboard
+      if (response.token) {
+        navigate('/dashboard');
+      } else {
+        // Admin registration: send user to login page with informational toast
+        navigate('/login');
+      }
     } catch (error) {
     } finally {
       setLoading(false);
@@ -129,7 +135,10 @@ const Register = () => {
               >
                 <option value="donor">Donor</option>
                 <option value="volunteer">Volunteer</option>
+                {/* Admin option requires approval from an existing admin after registration */}
+                <option value="admin">Admin (requires approval)</option>
               </select>
+              <p className="text-sm text-gray-500 mt-1">If you select <strong>Admin</strong>, your account will be submitted and needs approval by an existing admin before you can sign in.</p>
             </div>
 
             <button

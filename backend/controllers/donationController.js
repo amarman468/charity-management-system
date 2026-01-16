@@ -2,16 +2,9 @@ import Donation from '../models/Donation.js';
 import Campaign from '../models/Campaign.js';
 import Notification from '../models/Notification.js';
 
-const simulatePayment = (paymentMethod, amount) => {
-  const success = Math.random() > 0.05;
-  
-  if (success) {
-    const transactionId = `TXN${Date.now()}${Math.floor(Math.random() * 1000)}`;
-    return { success: true, transactionId };
-  } else {
-    return { success: false, message: 'Payment failed. Please try again.' };
-  }
-};
+import { initiatePayment, verifyPayment } from '../services/paymentService.js';
+import { sendDonationReceipt } from '../services/emailService.js';
+import { sendDonationSMS } from '../services/smsService.js';
 
 export const createDonation = async (req, res) => {
   try {
@@ -22,44 +15,61 @@ export const createDonation = async (req, res) => {
       return res.status(404).json({ message: 'Campaign not found' });
     }
 
-    const paymentResult = simulatePayment(paymentMethod, amount);
+    // 1. Initiate Payment
+    const paymentInit = await initiatePayment({
+      amount,
+      method: paymentMethod,
+      user: req.user,
+      campaignId
+    });
 
-    if (!paymentResult.success) {
+    if (!paymentInit.success) {
+      return res.status(400).json({ success: false, message: 'Payment initiation failed' });
+    }
+
+    // 2. Verify Payment (Immediate verification for mock)
+    const paymentVerification = await verifyPayment(paymentInit.transactionId);
+
+    if (!paymentVerification.success || paymentVerification.status !== 'completed') {
       const donation = await Donation.create({
         donor: req.user.userId,
         campaign: campaignId,
         amount,
         paymentMethod,
-        transactionId: `FAILED${Date.now()}`,
+        transactionId: paymentInit.transactionId || `FAILED${Date.now()}`,
         status: 'failed',
         paymentDetails
       });
-
-      return res.status(400).json({
-        success: false,
-        message: paymentResult.message,
-        donation
-      });
+      return res.status(400).json({ success: false, message: 'Payment failed' });
     }
 
+    // 3. Create Successful Donation Record
     const donation = await Donation.create({
       donor: req.user.userId,
       campaign: campaignId,
       amount,
       paymentMethod,
-      transactionId: paymentResult.transactionId,
+      transactionId: paymentInit.transactionId,
       status: 'completed',
-      paymentDetails
+      paymentDetails,
+      receiptGenerated: true
     });
 
-    campaign.currentAmount += amount;
+    // 4. Update Campaign Amount
+    campaign.currentAmount += Number(amount);
     await campaign.save();
+
+    // 5. Send Notifications
+    // We don't await these to not block the response
+    const user = await User.findById(req.user.userId);
+    sendDonationReceipt(donation, user).catch(console.error);
+    sendDonationSMS(donation, user).catch(console.error);
 
     await Notification.create({
       user: req.user.userId,
       type: 'email',
       title: 'Donation Successful',
-      message: `Thank you for your donation of ${amount} BDT to ${campaign.title}. Your transaction ID is ${paymentResult.transactionId}.`,
+      message: `Thank you for your donation of ${amount} BDT to ${campaign.title}. Your transaction ID is ${paymentInit.transactionId}.`,
       relatedEntity: {
         entityType: 'donation',
         entityId: donation._id
@@ -72,6 +82,7 @@ export const createDonation = async (req, res) => {
       data: donation
     });
   } catch (error) {
+    console.error('Donation Error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -79,7 +90,7 @@ export const createDonation = async (req, res) => {
 export const getDonations = async (req, res) => {
   try {
     let filter = {};
-    
+
     if (req.user.role === 'donor') {
       filter.donor = req.user.userId;
     }

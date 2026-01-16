@@ -57,6 +57,9 @@ const beneficiarySchema = new mongoose.Schema({
   distributionDate: {
     type: Date
   },
+  distributionProof: {
+    type: String // URL to proof image
+  },
   distributedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

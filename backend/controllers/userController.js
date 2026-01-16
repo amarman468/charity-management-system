@@ -74,3 +74,56 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get activity for a specific user (admin access)
+export const getUserActivity = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // lazy import to avoid circular deps
+    const Notification = (await import('../models/Notification.js')).default;
+    const VolunteerTask = (await import('../models/VolunteerTask.js')).default;
+
+    const notifications = await Notification.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    const tasksAssigned = await VolunteerTask.find({ assignedBy: userId })
+      .populate('volunteer', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    const tasksForUser = await VolunteerTask.find({ volunteer: userId })
+      .populate('assignedBy', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    // combine and normalize activities
+    let activities = [];
+
+    notifications.forEach((n) => activities.push({
+      type: 'notification',
+      date: n.createdAt,
+      payload: n
+    }));
+
+    tasksAssigned.forEach((t) => activities.push({
+      type: 'task_assigned',
+      date: t.createdAt,
+      payload: t
+    }));
+
+    tasksForUser.forEach((t) => activities.push({
+      type: 'task_for_user',
+      date: t.createdAt,
+      payload: t
+    }));
+
+    activities.sort((a, b) => b.date - a.date);
+    activities = activities.slice(0, 20);
+
+    res.json({ success: true, data: activities });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

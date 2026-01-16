@@ -36,6 +36,11 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  // For admin registrations we require explicit approval before the admin can login
+  isApproved: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

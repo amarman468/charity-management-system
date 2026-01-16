@@ -143,11 +143,10 @@ const Donations = () => {
                     {new Date(donation.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 rounded text-sm ${
-                      donation.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      donation.status === 'failed' ? 'bg-red-100 text-red-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span className={`px-2 py-1 rounded text-sm ${donation.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        donation.status === 'failed' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800'
+                      }`}>
                       {donation.status}
                     </span>
                   </td>
@@ -155,9 +154,20 @@ const Donations = () => {
                     {donation.status === 'completed' && (
                       <button
                         onClick={() => handleDownloadReceipt(donation._id)}
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 hover:underline mr-4"
                       >
                         {t('downloadReceipt')}
+                      </button>
+                    )}
+                    {donation.campaign?.type === 'orphan_sponsorship' && (
+                      <button
+                        onClick={() => {
+                          setDonateForm({ ...donateForm, campaignId: donation.campaign._id });
+                          setShowDonateModal(true);
+                        }}
+                        className="text-purple-600 hover:underline font-semibold"
+                      >
+                        Renew
                       </button>
                     )}
                   </td>

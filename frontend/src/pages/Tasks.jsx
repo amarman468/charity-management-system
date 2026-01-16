@@ -78,13 +78,12 @@ const Tasks = () => {
             <div key={task._id} className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-xl font-bold mb-2">{task.title}</h3>
               <p className="text-gray-600 mb-4">{task.description}</p>
-              
+
               <div className="mb-4">
-                <span className={`px-2 py-1 rounded text-sm ${
-                  task.status === 'completed' ? 'bg-green-100 text-green-800' :
+                <span className={`px-2 py-1 rounded text-sm ${task.status === 'completed' ? 'bg-green-100 text-green-800' :
                   task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
                   {task.status}
                 </span>
                 <p className="text-sm text-gray-500 mt-2">
@@ -110,7 +109,7 @@ const Tasks = () => {
                       onClick={() => setSelectedTask(task)}
                       className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
                     >
-                      Update Status
+                      {t('updateStatus')}
                     </button>
                     {task.status === 'assigned' && (
                       <button
@@ -145,30 +144,47 @@ const Tasks = () => {
       {selectedTask && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-4">Update Task Status</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('updateTaskStatus')}</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Update Text (Optional)</label>
+                <label className="block text-sm font-medium mb-1">
+                  {t('updateText')} ({t('optional')})
+                </label>
                 <textarea
                   value={updateText}
                   onChange={(e) => setUpdateText(e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Add an update about your progress..."
+                  placeholder="..."
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">{t('uploadPhoto')}</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full"
+                  onChange={(e) => {
+                    // Mock upload immediately for simplicity in this demo
+                    if (e.target.files[0]) {
+                      toast.success('Photo uploaded (simulated)');
+                    }
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-1">{t('proofOfWork')}</p>
               </div>
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleStatusUpdate(selectedTask._id, 'in-progress')}
                   className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
                 >
-                  Mark In Progress
+                  {t('markInProgress')}
                 </button>
                 <button
                   onClick={() => handleStatusUpdate(selectedTask._id, 'completed')}
                   className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700"
                 >
-                  Mark Completed
+                  {t('markCompleted')}
                 </button>
                 <button
                   onClick={() => {
@@ -177,7 +193,7 @@ const Tasks = () => {
                   }}
                   className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
               </div>
             </div>

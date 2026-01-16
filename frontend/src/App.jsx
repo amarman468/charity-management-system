@@ -14,6 +14,13 @@ import Beneficiaries from './pages/Beneficiaries.jsx';
 import Reports from './pages/Reports.jsx';
 import Users from './pages/Users.jsx';
 
+
+// Admin pages and route
+import AdminRoute from './routes/AdminRoute.jsx';
+import ManageUsers from './pages/admin/ManageUsers.jsx';
+import AdminRequests from './pages/admin/AdminRequests.jsx';
+import ManageTasks from './pages/admin/ManageTasks.jsx';
+
 function App() {
   return (
     <AuthProvider>
@@ -22,7 +29,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
+
             <Route
               path="/dashboard"
               element={
@@ -31,7 +38,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
+
+
             <Route
               path="/campaigns"
               element={
@@ -40,7 +49,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/donations"
               element={
@@ -49,7 +58,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/tasks"
               element={
@@ -58,7 +67,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/beneficiaries"
               element={
@@ -67,7 +76,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/reports"
               element={
@@ -76,16 +85,42 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/users"
               element={
-                <ProtectedRoute allowedRoles={['admin']}>
+                <ProtectedRoute allowedRoles={["admin"]}>
                   <Users />
                 </ProtectedRoute>
               }
             />
-            
+
+            {/* Admin panel routes */}
+            <Route
+              path="/admin/users"
+              element={
+                <AdminRoute>
+                  <ManageUsers />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/tasks"
+              element={
+                <AdminRoute>
+                  <ManageTasks />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/requests"
+              element={
+                <AdminRoute>
+                  <AdminRequests />
+                </AdminRoute>
+              }
+            />
+
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
           <Toaster position="top-right" />

@@ -10,6 +10,12 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a campaign description']
   },
+  type: {
+    type: String,
+    enum: ['general', 'zakat', 'sadaqah', 'disaster_relief', 'orphan_sponsorship'],
+    default: 'general',
+    required: true
+  },
   targetAmount: {
     type: Number,
     required: [true, 'Please provide a target amount'],
