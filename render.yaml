@@ -1,0 +1,40 @@
+services:
+  # Backend API Service
+  - type: web
+    name: charity-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+          name: charity-frontend
+          type: web
+          property: url
+
+  # Frontend Static Site
+  - type: web
+    name: charity-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: charity-backend
+          type: web
+          property: url
