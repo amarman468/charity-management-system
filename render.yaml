@@ -18,13 +18,12 @@ services:
         fromService:
           name: charity-frontend
           type: web
-          property: url
+          property: host
 
   # Frontend Static Site
   - type: web
     name: charity-frontend
     runtime: static
-    region: oregon
     plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
@@ -37,4 +36,4 @@ services:
         fromService:
           name: charity-backend
           type: web
-          property: url
+          property: host
