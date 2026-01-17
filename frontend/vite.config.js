@@ -20,9 +20,9 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: '/logo.svg',
+            src: '/logo.jpg',
             sizes: 'any',
-            type: 'image/svg+xml',
+            type: 'image/jpeg',
             purpose: 'any maskable'
           }
         ]
